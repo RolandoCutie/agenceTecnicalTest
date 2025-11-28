@@ -1,0 +1,6 @@
+<resources>
+    <!-- Replace with your real Facebook App ID (numbers only) -->
+    <string name="facebook_app_id">YOUR_FACEBOOK_APP_ID</string>
+    <!-- This must be fb + your app id -->
+    <string name="fb_login_protocol_scheme">fbYOUR_FACEBOOK_APP_ID</string>
+</resources>
