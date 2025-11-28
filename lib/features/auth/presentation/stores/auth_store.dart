@@ -25,6 +25,13 @@ abstract class _AuthStore with Store {
   @observable
   String? error;
 
+  @computed
+  String get displayName {
+    final n = currentUser?.name.trim();
+    if (n == null || n.isEmpty) return 'Anonymous';
+    return n;
+  }
+
   @action
   Future<bool> signInGoogle() async {
     isLoading = true;

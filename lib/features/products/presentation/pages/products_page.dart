@@ -1,7 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
+import '../../../auth/data/repositories/auth_repository_impl.dart';
+import '../../../auth/domain/usecases/sign_in_with_facebook.dart';
+import '../../../auth/domain/usecases/sign_in_with_google.dart';
+import '../../../auth/domain/usecases/sign_out.dart';
+import '../../../auth/presentation/stores/auth_store.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/usecases/get_products_paginated.dart';
 import '../stores/products_store.dart';
@@ -15,6 +21,7 @@ class ProductsPage extends StatefulWidget {
 
 class _ProductsPageState extends State<ProductsPage> {
   late final ProductsStore _store;
+  late final AuthStore _authStore;
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -22,6 +29,11 @@ class _ProductsPageState extends State<ProductsPage> {
     super.initState();
     final repo = ProductRepositoryImpl();
     _store = ProductsStore(GetProductsPaginated(repo));
+    _authStore = AuthStore(
+      SignInWithGoogle(AuthRepositoryImpl()),
+      SignInWithFacebook(AuthRepositoryImpl()),
+      SignOut(AuthRepositoryImpl()),
+    );
     _store.loadInitial();
     _scrollController.addListener(_onScroll);
   }
@@ -45,6 +57,72 @@ class _ProductsPageState extends State<ProductsPage> {
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
         appBar: AppBar(title: const Text('Products')),
+        drawer: Drawer(
+          child: Observer(
+            builder: (_) => ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                UserAccountsDrawerHeader(
+                  accountName: Text(
+                    fb.FirebaseAuth.instance.currentUser?.displayName
+                                ?.trim()
+                                .isNotEmpty ==
+                            true
+                        ? fb.FirebaseAuth.instance.currentUser!.displayName!
+                              .trim()
+                        : 'Anonymous',
+                  ),
+                  accountEmail: null,
+                  currentAccountPicture: CircleAvatar(
+                    child: Text(
+                      (fb.FirebaseAuth.instance.currentUser?.displayName
+                                      ?.trim()
+                                      .isNotEmpty ==
+                                  true
+                              ? fb
+                                    .FirebaseAuth
+                                    .instance
+                                    .currentUser!
+                                    .displayName!
+                                    .trim()[0]
+                              : 'A')
+                          .toUpperCase(),
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.person_outline),
+                  title: const Text('Profile'),
+                  onTap: () => Navigator.pushNamed(context, '/profile'),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.inventory_2_outlined),
+                  title: const Text('My products'),
+                  onTap: () => Navigator.pushNamed(context, '/my-products'),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.settings_outlined),
+                  title: const Text('Settings'),
+                  onTap: () => Navigator.pushNamed(context, '/settings'),
+                ),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: const Text('Sign out'),
+                  onTap: () async {
+                    await _authStore.signOut();
+                    if (!context.mounted) return;
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/login',
+                      (_) => false,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
         body: Observer(
           builder: (_) => NotificationListener<OverscrollIndicatorNotification>(
             onNotification: (n) {
@@ -90,7 +168,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                       : Image.network(
                                           p.thumbnailUrl!,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) => Image.asset(
+                                          errorBuilder: (_, _, _) => Image.asset(
                                             'assets/images/product_thumbail.png',
                                             fit: BoxFit.cover,
                                           ),

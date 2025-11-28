@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 
 import 'features/auth/presentation/pages/forgot_page.dart';
 import 'features/auth/presentation/pages/login_page.dart';
+import 'features/products/presentation/pages/my_products_page.dart';
 import 'features/products/presentation/pages/products_page.dart';
+import 'features/profile/presentation/pages/profile_page.dart';
+import 'features/settings/presentation/pages/settings_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +34,9 @@ class MainApp extends StatelessWidget {
         '/login': (_) => const LoginPage(),
         '/forgot': (_) => const ForgotPage(),
         '/products': (_) => const ProductsPage(),
+        '/profile': (_) => const ProfilePage(),
+        '/my-products': (_) => const MyProductsPage(),
+        '/settings': (_) => const SettingsPage(),
       },
       initialRoute: '/',
     );
