@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// Usamos flutter_map (OpenStreetMap) para evitar API keys de Google
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart' as ll;
@@ -19,7 +18,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   final MapController _mapController = MapController();
   ll.LatLng? _userLatLng;
   String? _locationError;
-  static const double _ringRadius = 30; // radio fijo del anillo
+  static const double _ringRadius = 30;
 
   @override
   void initState() {
@@ -31,43 +30,42 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    // flutter_map no requiere dispose del MapController
+
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    // Cuando la app vuelve a primer plano (desde settings), reintentar ubicación
-    if (state == AppLifecycleState.resumed && _userLatLng == null) {
+    if (state == AppLifecycleState.resumed) {
       _initLocation();
     }
   }
 
   Future<void> _initLocation() async {
     try {
+      setState(() => _locationError = null);
+
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         setState(() => _locationError = 'Location services are disabled.');
         if (mounted) {
-          // Mostrar diálogo para habilitar servicios de ubicación
-          // y abrir configuración del dispositivo.
           await showDialog(
             context: context,
             barrierDismissible: true,
-            builder: (_) => AlertDialog(
+            builder: (dialogContext) => AlertDialog(
               title: const Text('Enable Location'),
               content: const Text(
                 'Location services are disabled. Please enable GPS to show your position on the map.',
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Navigator.of(dialogContext).pop(),
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    Navigator.pop(context);
+                    Navigator.of(dialogContext).pop();
                     await Geolocator.openLocationSettings();
                   },
                   child: const Text('Open settings'),
@@ -175,23 +173,26 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () {
+                        final nav = Navigator.of(context);
                         showDialog(
                           context: context,
-                          builder: (_) => AlertDialog(
+                          builder: (firstDialogContext) => AlertDialog(
                             title: const Text('Confirm Purchase'),
                             content: Text('Buy ${widget.product.name}?'),
                             actions: [
                               TextButton(
-                                onPressed: () => Navigator.pop(context),
+                                onPressed: () =>
+                                    Navigator.of(firstDialogContext).pop(),
                                 child: const Text('Cancel'),
                               ),
                               ElevatedButton(
                                 onPressed: () async {
-                                  Navigator.pop(context);
+                                  Navigator.of(firstDialogContext).pop();
+                                  if (!mounted) return;
                                   await showDialog(
                                     context: context,
                                     barrierDismissible: false,
-                                    builder: (_) => AlertDialog(
+                                    builder: (secondDialogContext) => AlertDialog(
                                       title: const Text('Success!'),
                                       content: const Text(
                                         'Your purchase was completed successfully.',
@@ -199,10 +200,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                       actions: [
                                         ElevatedButton(
                                           onPressed: () {
-                                            Navigator.pop(context);
-
-                                            Navigator.pushNamedAndRemoveUntil(
-                                              context,
+                                            Navigator.of(
+                                              secondDialogContext,
+                                            ).pop();
+                                            if (!mounted) return;
+                                            nav.pushNamedAndRemoveUntil(
                                               '/products',
                                               (route) => false,
                                             );
