@@ -11,6 +11,7 @@ import '../../../auth/presentation/stores/auth_store.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/usecases/get_products_paginated.dart';
 import '../stores/products_store.dart';
+import 'product_detail_page.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -149,43 +150,53 @@ class _ProductsPageState extends State<ProductsPage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child:
-                                (p.thumbnailUrl != null &&
-                                    p.thumbnailUrl!.isNotEmpty)
-                                ? (p.thumbnailUrl!.startsWith('assets/')
-                                      ? Image.asset(
-                                          p.thumbnailUrl!,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Image.network(
-                                          p.thumbnailUrl!,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (_, _, _) => Image.asset(
-                                            'assets/images/product_thumbail.png',
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ProductDetailPage(product: p),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child:
+                                  (p.thumbnailUrl != null &&
+                                      p.thumbnailUrl!.isNotEmpty)
+                                  ? (p.thumbnailUrl!.startsWith('assets/')
+                                        ? Image.asset(
+                                            p.thumbnailUrl!,
                                             fit: BoxFit.cover,
-                                          ),
-                                        ))
-                                : Image.asset(
-                                    'assets/images/product_thumbail.png',
-                                    fit: BoxFit.cover,
-                                  ),
+                                          )
+                                        : Image.network(
+                                            p.thumbnailUrl!,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, _, _) => Image.asset(
+                                              'assets/images/product_thumbail.png',
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ))
+                                  : Image.asset(
+                                      'assets/images/product_thumbail.png',
+                                      fit: BoxFit.cover,
+                                    ),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          p.name,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
+                          const SizedBox(height: 8),
+                          Text(
+                            p.name,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
