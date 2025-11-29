@@ -7,10 +7,11 @@ import 'features/products/presentation/pages/my_products_page.dart';
 import 'features/products/presentation/pages/products_page.dart';
 import 'features/profile/presentation/pages/profile_page.dart';
 import 'features/settings/presentation/pages/settings_page.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MainApp());
 }
 
