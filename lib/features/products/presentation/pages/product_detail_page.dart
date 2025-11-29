@@ -186,7 +186,33 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                 child: const Text('Cancel'),
                               ),
                               ElevatedButton(
-                                onPressed: () => Navigator.pop(context),
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  await showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (_) => AlertDialog(
+                                      title: const Text('Success!'),
+                                      content: const Text(
+                                        'Your purchase was completed successfully.',
+                                      ),
+                                      actions: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+
+                                            Navigator.pushNamedAndRemoveUntil(
+                                              context,
+                                              '/products',
+                                              (route) => false,
+                                            );
+                                          },
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
                                 child: const Text('Confirm'),
                               ),
                             ],
