@@ -8,7 +8,7 @@ class ProductRepositoryImpl implements ProductRepository {
     required int pageSize,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 300));
-    final start = (page - 1) * pageSize;
+    final start = page * pageSize;
     return List.generate(pageSize, (index) {
       final idx = start + index + 1;
       final thumb = 'assets/images/product_thumbnail.png';

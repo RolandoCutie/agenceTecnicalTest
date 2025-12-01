@@ -179,12 +179,12 @@ class _ProductsPageState extends State<ProductsPage> {
                                             p.thumbnailUrl!,
                                             fit: BoxFit.cover,
                                             errorBuilder: (_, _, _) => Image.asset(
-                                              'assets/images/product_thumbail.png',
+                                              'assets/images/product_thumbnail.png',
                                               fit: BoxFit.cover,
                                             ),
                                           ))
                                   : Image.asset(
-                                      'assets/images/product_thumbail.png',
+                                      'assets/images/product_thumbnail.png',
                                       fit: BoxFit.cover,
                                     ),
                             ),

@@ -142,7 +142,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                       fit: BoxFit.cover,
                                     ))
                             : Image.asset(
-                                'assets/images/product_thumbail.png',
+                                'assets/images/product_thumbnail.png',
                                 width: 80,
                                 height: 80,
                                 fit: BoxFit.cover,
