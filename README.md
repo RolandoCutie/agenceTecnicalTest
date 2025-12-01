@@ -40,4 +40,17 @@ lib/features/
 └── settings/     # Placeholder
 ```
 
-**Note:** I used OpenStreetMap instead of Google Maps to avoid paid API key setup. It works the same with no additional costs.
+### Service Access Limitations (Google Maps / Facebook)
+
+The original requirement requested Google Maps (Android/iOS) and real Facebook Login. Due to regional access restrictions (from Cuba) to:
+- Google Cloud Console (API key provisioning for Maps)
+- Meta Developers (Facebook App creation / credentials)
+
+I implemented equivalent functionality using OpenStreetMap (`flutter_map`) + `geolocator` for user location and map rendering, and structured the authentication layer so Facebook can be fully enabled once valid App credentials are provided.
+
+Current Map Features:
+- User geolocation permission handling
+- Centering on the user's position
+- Marker + radius overlay
+
+I can perform the migration immediately if provided valid API credentials.
